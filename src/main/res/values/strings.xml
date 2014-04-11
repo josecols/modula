@@ -4,4 +4,5 @@
     <string name="action_ajustes">Ajustes</string>
     <string name="action_nuevochat">Nueva conversación</string>
     <string name="action_frases">Frases personalizadas</string>
+    <string name="action_nuevafrase">Nueva frase</string>
 </resources>
