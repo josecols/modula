@@ -1,5 +1,6 @@
 package ve.edu.ucab.modula.app;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ActionMode;
@@ -7,15 +8,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class FrasesActivity extends ActionBarActivity {
 
     private ListView vistaFrases;
     private ActionMode mActionMode;
-    private final String[] elementos = {"Elemento 1", "Elemento 2", "Elemento 3"};
+    private DataBaseManager mDbManager;
+    private Cursor cursor;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
@@ -42,6 +44,8 @@ public class FrasesActivity extends ActionBarActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            vistaFrases.setItemChecked(-1, true);
+            vistaFrases.setChoiceMode(ListView.CHOICE_MODE_NONE);
             mActionMode = null;
         }
     };
@@ -51,18 +55,14 @@ public class FrasesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frases);
         this.vistaFrases = (ListView) findViewById(R.id.vista_frases);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, this.elementos);
-        this.vistaFrases.setAdapter(adapter);
+        this.mDbManager = new DataBaseManager(getApplicationContext());
+        cargarLista();
+    }
 
-        this.vistaFrases.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mActionMode != null)
-                    return false;
-                mActionMode = startActionMode(mActionModeCallback);
-                view.setSelected(true);
-                return true;
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        this.cursor.close();
+        super.onDestroy();
     }
 
     @Override
@@ -78,5 +78,24 @@ public class FrasesActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void cargarLista() {
+        this.cursor = this.mDbManager.leerFrases();
+        String[] from = new String[]{DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
+        int[] to = new int[]{android.R.id.text1};
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_activated_1, cursor, from, to, 0);
+        this.vistaFrases.setAdapter(adapter);
+
+        this.vistaFrases.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                vistaFrases.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                if (mActionMode != null)
+                    return false;
+                mActionMode = startActionMode(mActionModeCallback);
+                vistaFrases.setItemChecked(position, true);
+                return true;
+            }
+        });
     }
 }
