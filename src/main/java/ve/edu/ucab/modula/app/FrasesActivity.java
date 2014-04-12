@@ -12,17 +12,22 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class FrasesActivity extends ActionBarActivity {
 
     private ListView vistaFrases;
+    private ArrayList<TextView> frasesSeleccionadas;
     private ActionMode mActionMode;
     private DataBaseManager mDbManager;
     private Cursor cursor;
+    private Menu actionMenu;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.frases_context, menu);
+            actionMenu = menu;
             return true;
         }
 
@@ -44,9 +49,12 @@ public class FrasesActivity extends ActionBarActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            vistaFrases.setItemChecked(-1, true);
+            for (TextView view : frasesSeleccionadas)
+                view.setActivated(false);
+            vistaFrases.clearChoices();
             vistaFrases.setChoiceMode(ListView.CHOICE_MODE_NONE);
             mActionMode = null;
+            actionMenu = null;
         }
     };
 
@@ -55,6 +63,7 @@ public class FrasesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frases);
         this.vistaFrases = (ListView) findViewById(R.id.vista_frases);
+        this.frasesSeleccionadas = new ArrayList<TextView>();
         this.mDbManager = new DataBaseManager(getApplicationContext());
         cargarLista();
     }
@@ -94,7 +103,22 @@ public class FrasesActivity extends ActionBarActivity {
                     return false;
                 mActionMode = startActionMode(mActionModeCallback);
                 vistaFrases.setItemChecked(position, true);
+                frasesSeleccionadas.add((TextView) view);
                 return true;
+            }
+        });
+
+        this.vistaFrases.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (actionMenu != null) {
+                    MenuItem item = actionMenu.findItem(R.id.action_modificarfrase);
+                    frasesSeleccionadas.add((TextView) view);
+                    if (vistaFrases.getCheckedItemCount() > 1)
+                        item.setVisible(false);
+                    else
+                        item.setVisible(true);
+                }
             }
         });
     }
