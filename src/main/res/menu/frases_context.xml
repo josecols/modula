@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ve.edu.ucab.modula.app.MainActivity">
+
+    <item
+        android:id="@+id/action_modificarfrase"
+        android:icon="@drawable/ic_action_edit"
+        android:title="@string/context_modificarfrase"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_eliminarfrase"
+        android:icon="@drawable/ic_action_remove"
+        android:title="@string/context_eliminarfrase"
+        app:showAsAction="ifRoom" />
+</menu>
