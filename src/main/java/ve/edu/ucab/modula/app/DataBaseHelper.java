@@ -4,9 +4,20 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * DataBaseHelper controla la creación y la actualización de la base de datos,
+ * además permite a la clase <DataBaseManager> realizar operaciones de escritura y lectura sobre
+ * la base de datos.
+ */
 public class DataBaseHelper extends SQLiteOpenHelper {
 
+    /**
+     * Nombre del archivo SQLite.
+     */
     public static final String NOMBRE = "modula.db";
+    /**
+     * Versión del esquema de la base de datos.
+     */
     public static final int VERSION = 1;
 
     public DataBaseHelper(Context context) {

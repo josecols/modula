@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * MainActivity es la vista principal de la aplicación, la misma contiene el listado de coversaciones
+ * y permite acceder a las frases favoritas y a los ajustes de la aplicación.
+ */
 public class MainActivity extends ActionBarActivity {
 
     @Override

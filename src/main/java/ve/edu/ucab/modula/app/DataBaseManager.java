@@ -5,15 +5,31 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+/**
+ * DataBaseManager es la interfaz que actúa entre la vista y la base de datos para realizar
+ * operaciones de gestión sobre los elementos de la aplicación.
+ */
 public final class DataBaseManager {
 
+    /**
+     * Helper de la base de datos, permite realizar operaciones de lectura y escritura sobre la misma.
+     */
     private DataBaseHelper mDbHelper;
+    /**
+     * Actúa como interfaz hacia el manejador de la base de datos, permite ejecutar SQL.
+     */
     private SQLiteDatabase sqLiteDatabase;
 
     public DataBaseManager(Context context) {
         this.mDbHelper = new DataBaseHelper(context);
     }
 
+    /**
+     * Retorna el texto de la frase cuyo ID es el proporcionado.
+     *
+     * @param id ID de la frase en la base de datos.
+     * @return Texto de la frase.
+     */
     public String getFrase(long id) {
         String[] columnas = {DataBaseContract.FrasesTabla._ID, DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
         this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
@@ -25,12 +41,22 @@ public final class DataBaseManager {
         return null;
     }
 
+    /**
+     * Consulta todas las frases registradas en la base de datos.
+     *
+     * @return Cursor con todos los registros.
+     */
     public Cursor leerFrases() {
         String[] columnas = {DataBaseContract.FrasesTabla._ID, DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
         this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
         return this.sqLiteDatabase.query(DataBaseContract.FrasesTabla.TABLE_NAME, columnas, null, null, null, null, null);
     }
 
+    /**
+     * Inserta una nueva frase en la base de datos.
+     *
+     * @param titulo Texto de la nueva frase.
+     */
     public void insertarFrase(String titulo) {
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO, titulo);
@@ -38,6 +64,12 @@ public final class DataBaseManager {
         this.sqLiteDatabase.insert(DataBaseContract.FrasesTabla.TABLE_NAME, null, values);
     }
 
+    /**
+     * Actualiza el texto de la frase dada.
+     *
+     * @param id     ID de la frase en la base de datos.
+     * @param titulo Nuevo texto de la frase.
+     */
     public void actualizarFrase(long id, String titulo) {
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO, titulo);
@@ -46,6 +78,11 @@ public final class DataBaseManager {
                 DataBaseContract.FrasesTabla._ID + "=?", new String[]{String.valueOf(id)});
     }
 
+    /**
+     * Elimina un conjunto de frases de la base de datos.
+     *
+     * @param ids Arreglo de ID de las frases que se van a eliminar.
+     */
     public void eliminarFrases(long ids[]) {
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
         for (long id : ids)

@@ -17,16 +17,43 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * FrasesActivity es la vista que permite gestionar las frases favoritas del usuario,
+ * ya se para su rápida reproducción o para ser introducidas en una conversación.
+ */
 public class FrasesActivity extends ActionBarActivity {
 
+    /**
+     * Lista de frases para la GUI, definido en el XML.
+     */
     private ListView vistaFrases;
+    /**
+     * Arreglo de cada una de las filas, de la lista de frases, resaltadas por el usuario.
+     */
     private ArrayList<TextView> frasesSeleccionadas;
+    /**
+     * Bandera para determinar el modo contextual de la vista.
+     */
     private ActionMode mActionMode;
+    /**
+     * Interfaz para realizar operaciones sobre la base de datos.
+     */
     private DataBaseManager mDbManager;
+    /**
+     * Cursor para desplazarse en la lista de todas las frases de la base de datos.
+     */
     private Cursor cursor;
+    /**
+     * Adaptador para alimentar la <vistaFrases> con el contenido de <cursor>.
+     */
     private SimpleCursorAdapter adapter;
+    /**
+     * Menú contextual que es activado cuando el usuario realiza un LongClick sobre <vistaFrases>.
+     */
     private Menu actionMenu;
-
+    /**
+     * Agrupa las operaciones que se pueden realizar con el menú contextual.
+     */
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -48,6 +75,9 @@ public class FrasesActivity extends ActionBarActivity {
                     mode.finish();
                     return true;
                 case R.id.action_eliminarfrase:
+                    /* Debido a que eliminar una gran cantidad de registros es una actividad pesada,
+                     * hacemos la ejecución en un hilo separado para mantener el rendimiento.
+                     */
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -105,13 +135,18 @@ public class FrasesActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Este método se encarga de leer los registros de la base de datos y llenar la lista de
+     * frases <vistaFrase> con la información leída. Además, define el control de selección de los
+     * elementos de la lista.
+     */
     public void cargarLista() {
         this.cursor = this.mDbManager.leerFrases();
         String[] from = new String[]{DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
         int[] to = new int[]{android.R.id.text1};
         this.adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_activated_1, cursor, from, to, 0);
         this.vistaFrases.setAdapter(this.adapter);
-
+        // Cuando se realiza un LongClick se abre el menú contextual.
         this.vistaFrases.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 vistaFrases.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -123,7 +158,6 @@ public class FrasesActivity extends ActionBarActivity {
                 return true;
             }
         });
-
         this.vistaFrases.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -139,6 +173,12 @@ public class FrasesActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * Genera un diálogo con un EditText con el fin de solicitarle al usuario el texto de la frase.
+     *
+     * @param id    ID de la frase a modificar, se espera -1 si es una inserción.
+     * @param frase Texto de la frase a modificar, se espera null si es una inserción.
+     */
     private void crearDialogo(final long id, String frase) {
         final EditText input = new EditText(this);
         if (frase != null)
