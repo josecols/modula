@@ -1,5 +1,7 @@
 package ve.edu.ucab.modula.app;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -8,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -21,6 +24,7 @@ public class FrasesActivity extends ActionBarActivity {
     private ActionMode mActionMode;
     private DataBaseManager mDbManager;
     private Cursor cursor;
+    private SimpleCursorAdapter adapter;
     private Menu actionMenu;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -39,7 +43,18 @@ public class FrasesActivity extends ActionBarActivity {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.action_nuevafrase:
+                case R.id.action_modificarfrase:
+                    crearDialogo(vistaFrases.getCheckedItemIds()[0], mDbManager.getFrase(vistaFrases.getCheckedItemIds()[0]));
+                    mode.finish();
+                    return true;
+                case R.id.action_eliminarfrase:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDbManager.eliminarFrases(vistaFrases.getCheckedItemIds());
+                            adapter.changeCursor(mDbManager.leerFrases());
+                        }
+                    });
                     mode.finish();
                     return true;
                 default:
@@ -84,6 +99,7 @@ public class FrasesActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_nuevafrase) {
+            crearDialogo(-1, null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -93,8 +109,8 @@ public class FrasesActivity extends ActionBarActivity {
         this.cursor = this.mDbManager.leerFrases();
         String[] from = new String[]{DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
         int[] to = new int[]{android.R.id.text1};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_activated_1, cursor, from, to, 0);
-        this.vistaFrases.setAdapter(adapter);
+        this.adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_activated_1, cursor, from, to, 0);
+        this.vistaFrases.setAdapter(this.adapter);
 
         this.vistaFrases.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,5 +137,28 @@ public class FrasesActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    private void crearDialogo(final long id, String frase) {
+        final EditText input = new EditText(this);
+        if (frase != null)
+            input.setText(frase);
+        new AlertDialog.Builder(this)
+                .setTitle("Ingresa la frase")
+                .setView(input)
+                .setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (id == -1)
+                            mDbManager.insertarFrase(input.getText().toString());
+                        else
+                            mDbManager.actualizarFrase(id, input.getText().toString());
+                        adapter.changeCursor(mDbManager.leerFrases());
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                })
+                .show();
     }
 }
