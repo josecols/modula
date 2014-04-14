@@ -89,4 +89,20 @@ public final class DataBaseManager {
             this.sqLiteDatabase.delete(DataBaseContract.FrasesTabla.TABLE_NAME,
                     DataBaseContract.FrasesTabla._ID + "=" + String.valueOf(id), null);
     }
+
+    public Cursor leerMensajes(long id_chat){
+        this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
+        String[] columnas = {DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO, DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO};
+        return this.sqLiteDatabase.query(DataBaseContract.MensajesTabla.TABLE_NAME,columnas,DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID+"="+String.valueOf(id_chat),null,null,null,null);
+    }
+
+    public void insertarMensaje(long id_chat,Mensaje msj){
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID,id_chat);
+        values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO, msj.getTexto());
+        values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO, msj.enviado());
+        this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
+        this.sqLiteDatabase.insert(DataBaseContract.MensajesTabla.TABLE_NAME, null, values);
+    }
+    
 }

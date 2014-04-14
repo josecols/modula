@@ -37,8 +37,8 @@ public final class DataBaseContract {
         public static final String COLUMN_NAME_ENVIADO = "enviado";
         public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
                 _ID + " INTEGER PRIMARY KEY," +
-                COLUMN_NAME_CHAT_ID + " TEXT," +
-                COLUMN_NAME_TEXTO + " INTEGER," +
+                COLUMN_NAME_CHAT_ID + " INTEGER," +
+                COLUMN_NAME_TEXTO + " TEXT," +
                 COLUMN_NAME_ENVIADO + " BOOLEAN," + "" +
                 "FOREIGN KEY(" + COLUMN_NAME_CHAT_ID + ") REFERENCES " + ChatsTabla.TABLE_NAME + "(" + ChatsTabla._ID + ")" +
                 " );";
