@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * FrasesActivity es la vista que permite gestionar las frases favoritas del usuario,
@@ -47,6 +49,14 @@ public class FrasesActivity extends ActionBarActivity {
      * Adaptador para alimentar la <vistaFrases> con el contenido de <cursor>.
      */
     private SimpleCursorAdapter adapter;
+    /**
+     * Referencia al manejador de pronunciación de texto.
+     */
+    private TextoAVoz pronunciador;
+    /**
+     * Encapsula los procedimientos a ejecutar dependiendo del estado del servicio de pronunciación.
+     */
+    private TTSCallback callback;
     /**
      * Menú contextual que es activado cuando el usuario realiza un LongClick sobre <vistaFrases>.
      */
@@ -107,15 +117,43 @@ public class FrasesActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frases);
+        this.callback = new TTSCallback(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                cargarLista();
+                return null;
+            }
+        }, new Callable() {
+            @Override
+            public Object call() throws Exception {
+                Log.d("Modula", "Hablando");
+                return null;
+            }
+        }, new Callable() {
+            @Override
+            public Object call() throws Exception {
+                Log.d("Modula", "Texto pronunciado");
+
+                return null;
+            }
+        }, new Callable() {
+            @Override
+            public Object call() throws Exception {
+                Log.d("Modula", "Ocurrió un error al pronunciar el texto");
+                return null;
+            }
+        }
+        );
         this.vistaFrases = (ListView) findViewById(R.id.vista_frases);
         this.frasesSeleccionadas = new ArrayList<TextView>();
         this.mDbManager = new DataBaseManager(getApplicationContext());
-        cargarLista();
+        this.pronunciador = new TextoAVoz(this, this.callback);
     }
 
     @Override
     protected void onDestroy() {
         this.cursor.close();
+        this.pronunciador.finalizar();
         super.onDestroy();
     }
 
@@ -168,6 +206,8 @@ public class FrasesActivity extends ActionBarActivity {
                         item.setVisible(false);
                     else
                         item.setVisible(true);
+                } else {
+                    pronunciador.pronunciar(((TextView) view).getText().toString());
                 }
             }
         });
