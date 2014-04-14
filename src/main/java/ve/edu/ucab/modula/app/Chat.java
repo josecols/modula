@@ -1,7 +1,5 @@
 package ve.edu.ucab.modula.app;
 
-
-import android.app.ListActivity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,7 +8,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
+
 import java.util.ArrayList;
+
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.widget.ListView;
@@ -34,13 +34,13 @@ public class Chat extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat);
-        locutor = new TextoAVoz(this);
+        locutor = new TextoAVoz(this, new TTSCallback(null, null, null, null));
         traductor = new VozATexto(this);
         boton_hablar = (ImageButton) findViewById(R.id.hablar);
         boton_escuchar = (ImageButton) findViewById(R.id.escuchar);
         texto = (EditText) findViewById(R.id.edit);
         mensajes = new ArrayList<Mensaje>();
-        adaptador = new Adaptador(this,mensajes);
+        adaptador = new Adaptador(this, mensajes);
         bd = new DataBaseManager(getApplicationContext());
         id_chat = getIntent().getExtras().getLong("id_chat");
         lista = (ListView) findViewById(R.id.lista);
@@ -58,46 +58,47 @@ public class Chat extends ActionBarActivity {
                 }
             }
         });
-        boton_escuchar.setOnClickListener(new View.OnClickListener(){
+        boton_escuchar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 traductor.traducir();
             }
-        }); 
+        });
         cargarMensajes();
     }
 
 
-    private void cargarMensajes(){
+    private void cargarMensajes() {
         Cursor cur = bd.leerMensajes(id_chat);
-        if(cur.moveToFirst()){
+        if (cur.moveToFirst()) {
             int col_texto = cur.getColumnIndex(DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO);
             int col_enviado = cur.getColumnIndex(DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO);
-            do{
-                mensajes.add(new Mensaje(cur.getString(col_texto),cur.getString(col_enviado).equals("1")));
-            }while(cur.moveToNext());
+            do {
+                mensajes.add(new Mensaje(cur.getString(col_texto), cur.getString(col_enviado).equals("1")));
+            } while (cur.moveToNext());
             adaptador.notifyDataSetChanged();
-            lista.setSelection(mensajes.size()-1);
+            lista.setSelection(mensajes.size() - 1);
         }
     }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case VozATexto.CONVERSION_ID: {
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> texto = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    Mensaje msj = new Mensaje(texto.get(0),false);
+                    Mensaje msj = new Mensaje(texto.get(0), false);
                     addNewMessage(msj);
-                    bd.insertarMensaje(id_chat,msj);
+                    bd.insertarMensaje(id_chat, msj);
                 }
                 break;
             }
-            case 2: /*Valor del activity Frases*/{
+            case 2: /*Valor del activity Frases*/ {
                 if (resultCode == RESULT_OK && null != data) {
                     String str = data.getStringExtra("frase");
-                    Mensaje msj = new Mensaje(str,true);
+                    Mensaje msj = new Mensaje(str, true);
                     addNewMessage(msj);
-                    bd.insertarMensaje(id_chat,msj);
+                    bd.insertarMensaje(id_chat, msj);
                     locutor.pronunciar(str);
                 }
                 break;
@@ -119,13 +120,13 @@ public class Chat extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.chat, menu);
         getActionBar().setHomeButtonEnabled(true);
         Cursor cur = bd.leerChat(id_chat);
-        String foto="";
-        String titulo="";
-        if(cur.moveToFirst()){
+        String foto = "";
+        String titulo = "";
+        if (cur.moveToFirst()) {
             foto = cur.getString(cur.getColumnIndex(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO));
             titulo = cur.getString(cur.getColumnIndex(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO));
         }
-        if(foto.equals(""))
+        if (foto.equals(""))
             getActionBar().setLogo(R.drawable.user);
         else {
             getActionBar().setLogo(Drawable.createFromPath(foto));
@@ -141,7 +142,7 @@ public class Chat extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         Toast t;
-        switch (id){
+        switch (id) {
             case R.id.action_frases:
                 //llamar activity frases
                 return true;
@@ -161,10 +162,9 @@ public class Chat extends ActionBarActivity {
         super.onDestroy();
     }
 
-    void addNewMessage(Mensaje m)
-    {
+    void addNewMessage(Mensaje m) {
         mensajes.add(m);
         adaptador.notifyDataSetChanged();
-        lista.setSelection(mensajes.size()-1);
+        lista.setSelection(mensajes.size() - 1);
     }
 }
