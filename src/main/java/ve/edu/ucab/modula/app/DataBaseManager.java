@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * DataBaseManager es la interfaz que actúa entre la vista y la base de datos para realizar
  * operaciones de gestión sobre los elementos de la aplicación.
@@ -104,5 +108,21 @@ public final class DataBaseManager {
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
         this.sqLiteDatabase.insert(DataBaseContract.MensajesTabla.TABLE_NAME, null, values);
     }
-    
+
+    public Cursor leerChat(long id){
+        this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
+        String[] columnas = {DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO};
+        return this.sqLiteDatabase.query(DataBaseContract.ChatsTabla.TABLE_NAME,columnas,DataBaseContract.ChatsTabla._ID+"="+String.valueOf(id),null,null,null,null);
+    }
+
+    public long crearChat(){
+        Calendar cal = new GregorianCalendar();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,df.format(cal.getTime()));
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO,"");
+        return this.sqLiteDatabase.insert(DataBaseContract.ChatsTabla.TABLE_NAME,null,values);
+    }
+
 }
