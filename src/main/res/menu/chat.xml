@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ve.ucab.chat.app.Chat" >
+
+
+    <item
+        android:id="@+id/action_frases"
+        android:icon="@drawable/ic_action_important"
+        android:title="@string/action_frases"
+        app:showAsAction="ifRoom" />
+
+</menu>

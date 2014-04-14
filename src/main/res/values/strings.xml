@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Modula</string>
     <string name="action_ajustes">Ajustes</string>
     <string name="action_nuevochat">Nueva conversación</string>
@@ -7,4 +8,8 @@
     <string name="action_nuevafrase">Nueva frase</string>
     <string name="context_modificarfrase">Modificar frase</string>
     <string name="context_eliminarfrase">Eliminar frase</string>
+    <string name="title_activity_chat">Chat</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>
