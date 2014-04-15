@@ -103,12 +103,12 @@ public class Chat extends ActionBarActivity {
                 }
                 break;
             }
-            /*case Perfil.PERFIL_ID:{
-                if (resultCode == RESULT_OK && null != data) {
-                    //Actualizar titulo e imagen desde los datos de la BD
-                    getActionBar().setLogo(Drawable.createFromPath((String) data.getExtras().get("ruta")));
+            case Perfil.PERFIL_ID:{
+                if (resultCode == RESULT_OK) {
+                    cargarDatosChat();
                 }
-            }*/
+                break;
+            }
         }
     }
 
@@ -118,6 +118,11 @@ public class Chat extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.chat, menu);
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getActionBar().setHomeButtonEnabled(true);
+        cargarDatosChat();
+        return true;
+    }
+
+    public void cargarDatosChat(){
         Cursor cur = bd.leerChat(id_chat);
         String foto = "";
         String titulo = "";
@@ -131,7 +136,6 @@ public class Chat extends ActionBarActivity {
             getActionBar().setLogo(Drawable.createFromPath(foto));
         }
         getActionBar().setTitle(titulo);
-        return true;
     }
 
     @Override
@@ -146,13 +150,11 @@ public class Chat extends ActionBarActivity {
                 //llamar activity frases
                 return true;
             default:
-                /*Intent frases = new Intent(this,Perfil.class);
-                startActivityForResult(frases,Perfil.PERFIL_ID);*/
-                t = Toast.makeText(getApplicationContext(), "Presionado", Toast.LENGTH_SHORT);
-                t.show();
+                Intent perfil = new Intent(this,Perfil.class);
+                perfil.putExtra("id_chat",id_chat);
+                startActivityForResult(perfil,Perfil.PERFIL_ID);
                 return true;
         }
-        //return super.onOptionsItemSelected(item);
     }
 
     @Override

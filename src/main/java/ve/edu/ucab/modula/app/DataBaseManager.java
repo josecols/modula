@@ -115,6 +115,14 @@ public final class DataBaseManager {
         return this.sqLiteDatabase.query(DataBaseContract.ChatsTabla.TABLE_NAME,columnas,DataBaseContract.ChatsTabla._ID+"="+String.valueOf(id),null,null,null,null);
     }
 
+    public void actualizarChat(long id, String titulo, String foto){
+        this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,titulo);
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO, foto);
+        this.sqLiteDatabase.update(DataBaseContract.ChatsTabla.TABLE_NAME,values,DataBaseContract.ChatsTabla._ID+"="+String.valueOf(id),null);
+    }
+
     public long crearChat(){
         Calendar cal = new GregorianCalendar();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -124,5 +132,7 @@ public final class DataBaseManager {
         values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO,"");
         return this.sqLiteDatabase.insert(DataBaseContract.ChatsTabla.TABLE_NAME,null,values);
     }
+
+
 
 }

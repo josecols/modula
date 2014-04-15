@@ -10,4 +10,8 @@
     <string name="context_eliminarfrase">Eliminar frase</string>
     <string name="title_activity_chat">Chat</string>
     <string name="title_activity_frases">Frases</string>
+    <string name="title_activity_perfil">Perfil</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>
