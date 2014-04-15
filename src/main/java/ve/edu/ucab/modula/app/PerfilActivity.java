@@ -17,14 +17,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
-public class Perfil extends ActionBarActivity {
+public class PerfilActivity extends ActionBarActivity {
     public static final int PERFIL_ID = 3;
     private ImageView foto;
     private ImageButton eliminar;
@@ -35,12 +33,13 @@ public class Perfil extends ActionBarActivity {
     private Bitmap img;
     private File dir;
     private long id_chat;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.perfil);
-        dir = getDir("Fotos",this.MODE_PRIVATE);
-        if(!dir.exists())
+        dir = getDir("Fotos", this.MODE_PRIVATE);
+        if (!dir.exists())
             dir.mkdir();
         foto = (ImageView) findViewById(R.id.foto);
         eliminar = (ImageButton) findViewById(R.id.eliminar);
@@ -59,18 +58,18 @@ public class Perfil extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 Intent toma = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(toma,0);
+                startActivityForResult(toma, 0);
             }
         });
         aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String str = titulo.getText().toString().trim();
-                if(!str.equals("")){
-                    if(img!=null){
-                        File file = new File(dir,String.valueOf(id_chat)+".png");
+                if (!str.equals("")) {
+                    if (img != null) {
+                        File file = new File(dir, String.valueOf(id_chat) + ".png");
                         FileOutputStream out;
-                        if(file.exists())
+                        if (file.exists())
                             file.delete();
                         try {
                             file.createNewFile();
@@ -86,15 +85,13 @@ public class Perfil extends ActionBarActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        bd.actualizarChat(id_chat,str,file.getPath());
-                    }
-                    else
-                        bd.actualizarChat(id_chat,str,"");
+                        bd.actualizarChat(id_chat, str, file.getPath());
+                    } else
+                        bd.actualizarChat(id_chat, str, "");
                     setResult(RESULT_OK);
                     finish();
-                }else{
-                    Toast t = Toast.makeText(getApplicationContext(), "Agregue un Titulo", Toast.LENGTH_SHORT);
-                    t.show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Agregue un título", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -102,7 +99,7 @@ public class Perfil extends ActionBarActivity {
         cargarDatosChat();
     }
 
-    public void cargarDatosChat(){
+    public void cargarDatosChat() {
         Cursor cur = bd.leerChat(id_chat);
         String aux_foto = "";
         String aux_titulo = "";
@@ -110,11 +107,10 @@ public class Perfil extends ActionBarActivity {
             aux_foto = cur.getString(cur.getColumnIndex(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO));
             aux_titulo = cur.getString(cur.getColumnIndex(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO));
         }
-        if (aux_foto.equals("")){
+        if (aux_foto.equals("")) {
             foto.setImageResource(R.drawable.user);
             img = null;
-        }
-        else {
+        } else {
             foto.setImageDrawable(Drawable.createFromPath(aux_foto));
             img = BitmapFactory.decodeFile(aux_foto);
         }
@@ -122,36 +118,18 @@ public class Perfil extends ActionBarActivity {
     }
 
 
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==0 && resultCode == RESULT_OK){
+        if (requestCode == 0 && resultCode == RESULT_OK) {
             img = (Bitmap) (data.getExtras().get("data"));
             foto.setImageBitmap(img);
         }
-
-    }
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.perfil, menu);
-        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        setResult(RESULT_OK);
+        finish();
+        return true;
     }
-
 }

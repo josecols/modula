@@ -14,11 +14,10 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.database.Cursor;
 
 
-public class Chat extends ActionBarActivity {
+public class ChatActivity extends ActionBarActivity {
     private ListView lista;
     private ImageButton boton_hablar;
     private ImageButton boton_escuchar;
@@ -93,7 +92,7 @@ public class Chat extends ActionBarActivity {
                 }
                 break;
             }
-            case FrasesActivity.FRASES_ID:{
+            case FrasesActivity.FRASES_ID: {
                 if (resultCode == RESULT_OK && null != data) {
                     String str = data.getStringExtra("frase");
                     Mensaje msj = new Mensaje(str, true);
@@ -103,7 +102,7 @@ public class Chat extends ActionBarActivity {
                 }
                 break;
             }
-            case Perfil.PERFIL_ID:{
+            case PerfilActivity.PERFIL_ID: {
                 if (resultCode == RESULT_OK) {
                     cargarDatosChat();
                 }
@@ -122,7 +121,7 @@ public class Chat extends ActionBarActivity {
         return true;
     }
 
-    public void cargarDatosChat(){
+    public void cargarDatosChat() {
         Cursor cur = bd.leerChat(id_chat);
         String foto = "";
         String titulo = "";
@@ -140,21 +139,17 @@ public class Chat extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Toast t;
         switch (id) {
             case R.id.action_frases:
-                Intent frases = new Intent(this,FrasesActivity.class);
-                frases.putExtra("chat",true);
-                startActivityForResult(frases,FrasesActivity.FRASES_ID);
+                Intent frases = new Intent(this, FrasesActivity.class);
+                frases.putExtra("chat", true);
+                startActivityForResult(frases, FrasesActivity.FRASES_ID);
                 return true;
             default:
-                Intent perfil = new Intent(this,Perfil.class);
-                perfil.putExtra("id_chat",id_chat);
-                startActivityForResult(perfil,Perfil.PERFIL_ID);
+                Intent perfil = new Intent(this, PerfilActivity.class);
+                perfil.putExtra("id_chat", id_chat);
+                startActivityForResult(perfil, PerfilActivity.PERFIL_ID);
                 return true;
         }
     }

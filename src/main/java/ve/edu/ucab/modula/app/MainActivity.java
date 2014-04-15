@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
                 return true;
             case R.id.action_nuevochat:
-                Intent chat = new Intent(this, Chat.class);
+                Intent chat = new Intent(this, ChatActivity.class);
                 chat.putExtra("id_chat", new DataBaseManager(this).crearChat());
                 startActivity(chat);
                 return true;

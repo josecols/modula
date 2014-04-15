@@ -94,45 +94,42 @@ public final class DataBaseManager {
                     DataBaseContract.FrasesTabla._ID + "=" + String.valueOf(id), null);
     }
 
-    public Cursor leerMensajes(long id_chat){
+    public Cursor leerMensajes(long id_chat) {
         this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
         String[] columnas = {DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO, DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO};
-        return this.sqLiteDatabase.query(DataBaseContract.MensajesTabla.TABLE_NAME,columnas,DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID+"="+String.valueOf(id_chat),null,null,null,null);
+        return this.sqLiteDatabase.query(DataBaseContract.MensajesTabla.TABLE_NAME, columnas, DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID + "=" + String.valueOf(id_chat), null, null, null, null);
     }
 
-    public void insertarMensaje(long id_chat,Mensaje msj){
+    public void insertarMensaje(long id_chat, Mensaje msj) {
         ContentValues values = new ContentValues();
-        values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID,id_chat);
+        values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID, id_chat);
         values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO, msj.getTexto());
         values.put(DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO, msj.enviado());
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
         this.sqLiteDatabase.insert(DataBaseContract.MensajesTabla.TABLE_NAME, null, values);
     }
 
-    public Cursor leerChat(long id){
+    public Cursor leerChat(long id) {
         this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
-        String[] columnas = {DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO};
-        return this.sqLiteDatabase.query(DataBaseContract.ChatsTabla.TABLE_NAME,columnas,DataBaseContract.ChatsTabla._ID+"="+String.valueOf(id),null,null,null,null);
+        String[] columnas = {DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO, DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO};
+        return this.sqLiteDatabase.query(DataBaseContract.ChatsTabla.TABLE_NAME, columnas, DataBaseContract.ChatsTabla._ID + "=" + String.valueOf(id), null, null, null, null);
     }
 
-    public void actualizarChat(long id, String titulo, String foto){
+    public void actualizarChat(long id, String titulo, String foto) {
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,titulo);
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO, titulo);
         values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO, foto);
-        this.sqLiteDatabase.update(DataBaseContract.ChatsTabla.TABLE_NAME,values,DataBaseContract.ChatsTabla._ID+"="+String.valueOf(id),null);
+        this.sqLiteDatabase.update(DataBaseContract.ChatsTabla.TABLE_NAME, values, DataBaseContract.ChatsTabla._ID + "=" + String.valueOf(id), null);
     }
 
-    public long crearChat(){
+    public long crearChat() {
         Calendar cal = new GregorianCalendar();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,df.format(cal.getTime()));
-        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO,"");
-        return this.sqLiteDatabase.insert(DataBaseContract.ChatsTabla.TABLE_NAME,null,values);
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO, df.format(cal.getTime()));
+        values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO, "");
+        return this.sqLiteDatabase.insert(DataBaseContract.ChatsTabla.TABLE_NAME, null, values);
     }
-
-
-
 }

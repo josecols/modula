@@ -25,7 +25,7 @@
                 android:value="ve.edu.ucab.modula.app.MainActivity" />
         </activity>
         <activity
-            android:name="ve.edu.ucab.modula.app.Chat"
+            android:name="ve.edu.ucab.modula.app.ChatActivity"
             android:label="@string/title_activity_chat"
             android:parentActivityName="ve.edu.ucab.modula.app.MainActivity" >
             <meta-data
@@ -33,9 +33,10 @@
                 android:value="ve.edu.ucab.modula.app.MainActivity" />
         </activity>
         <activity
-            android:name="ve.edu.ucab.modula.app.Perfil"
+            android:name="ve.edu.ucab.modula.app.PerfilActivity"
             android:label="@string/title_activity_perfil"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:parentActivityName="ve.edu.ucab.modula.app.ChatActivity" >
         </activity>
     </application>
 

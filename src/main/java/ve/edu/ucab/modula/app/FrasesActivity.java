@@ -2,6 +2,7 @@ package ve.edu.ucab.modula.app;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,6 +16,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -34,6 +37,10 @@ public class FrasesActivity extends ActionBarActivity {
      * Arreglo de cada una de las filas, de la lista de frases, resaltadas por el usuario.
      */
     private ArrayList<TextView> frasesSeleccionadas;
+    /**
+     * Instancia de la frase en ejecución.
+     */
+    private TextView fraseEnEjecucion;
     /**
      * Bandera para determinar el modo contextual de la vista.
      */
@@ -58,6 +65,10 @@ public class FrasesActivity extends ActionBarActivity {
      * Encapsula los procedimientos a ejecutar dependiendo del estado del servicio de pronunciación.
      */
     private TTSCallback callback;
+    /**
+     * Identifica que clase realizoó la llamada de <FrasesActivity>.
+     */
+    private Class parentActivityClass;
     /**
      * Menú contextual que es activado cuando el usuario realiza un LongClick sobre <vistaFrases>.
      */
@@ -127,14 +138,23 @@ public class FrasesActivity extends ActionBarActivity {
         }, new Callable() {
             @Override
             public Object call() throws Exception {
-                Log.d("Modula", "Hablando");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_volume_on, 0);
+                    }
+                });
                 return null;
             }
         }, new Callable() {
             @Override
             public Object call() throws Exception {
-                Log.d("Modula", "Texto pronunciado");
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    }
+                });
                 return null;
             }
         }, new Callable() {
@@ -149,6 +169,7 @@ public class FrasesActivity extends ActionBarActivity {
         this.frasesSeleccionadas = new ArrayList<TextView>();
         this.mDbManager = new DataBaseManager(getApplicationContext());
         this.pronunciador = new TextoAVoz(this, this.callback);
+        this.parentActivityClass = getIntent().getExtras() == null ? MainActivity.class : ChatActivity.class;
     }
 
     @Override
@@ -209,7 +230,17 @@ public class FrasesActivity extends ActionBarActivity {
                     else
                         item.setVisible(true);
                 } else {
-                    pronunciador.pronunciar(((TextView) view).getText().toString());
+                    if (parentActivityClass == ChatActivity.class) {
+                        Intent resultado = new Intent();
+                        resultado.putExtra("frase", ((TextView) view).getText().toString());
+                        setResult(RESULT_OK, resultado);
+                        finish();
+                    } else if (parentActivityClass == MainActivity.class) {
+                        if (fraseEnEjecucion != null)
+                            fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                        fraseEnEjecucion = (TextView) view;
+                        pronunciador.pronunciar(fraseEnEjecucion.getText().toString());
+                    }
                 }
             }
         });
