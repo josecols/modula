@@ -25,6 +25,7 @@ import java.util.concurrent.Callable;
  */
 public class FrasesActivity extends ActionBarActivity {
 
+    public static final int FRASES_ID = 2;
     /**
      * Lista de frases para la GUI, definido en el XML.
      */

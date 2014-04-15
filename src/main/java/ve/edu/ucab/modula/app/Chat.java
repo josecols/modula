@@ -93,7 +93,7 @@ public class Chat extends ActionBarActivity {
                 }
                 break;
             }
-            case 2: /*Valor del activity Frases*/ {
+            case FrasesActivity.FRASES_ID:{
                 if (resultCode == RESULT_OK && null != data) {
                     String str = data.getStringExtra("frase");
                     Mensaje msj = new Mensaje(str, true);
@@ -147,7 +147,8 @@ public class Chat extends ActionBarActivity {
         Toast t;
         switch (id) {
             case R.id.action_frases:
-                //llamar activity frases
+                Intent frases = new Intent(this,FrasesActivity.class);
+                startActivityForResult(frases,FrasesActivity.FRASES_ID);
                 return true;
             default:
                 Intent perfil = new Intent(this,Perfil.class);
