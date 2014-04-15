@@ -116,6 +116,7 @@ public class Chat extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chat, menu);
+        getActionBar().setDisplayHomeAsUpEnabled(false);
         getActionBar().setHomeButtonEnabled(true);
         Cursor cur = bd.leerChat(id_chat);
         String foto = "";
@@ -147,6 +148,8 @@ public class Chat extends ActionBarActivity {
             default:
                 /*Intent frases = new Intent(this,Perfil.class);
                 startActivityForResult(frases,Perfil.PERFIL_ID);*/
+                t = Toast.makeText(getApplicationContext(), "Presionado", Toast.LENGTH_SHORT);
+                t.show();
                 return true;
         }
         //return super.onOptionsItemSelected(item);
