@@ -13,4 +13,6 @@
     <string name="hint_activity_perfil">Título del chat</string>
     <string name="hint_activity_chat">Escribe lo que quieres decir</string>
     <string name="title_button_perfil">Guardar</string>
+    <string name="title_mensaje_main">No hay historial de conversaciones</string>
+    <string name="title_mensaje_frases">Aún no has agregado frases</string>
 </resources>

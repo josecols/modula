@@ -17,8 +17,6 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
@@ -33,6 +31,14 @@ public class FrasesActivity extends ActionBarActivity {
      * Lista de frases para la GUI, definido en el XML.
      */
     private ListView vistaFrases;
+    /**
+     * Permite mostrar mensajes al usuario.
+     */
+    private TextView vistaMensaje;
+    /**
+     * Indica si existe conexión con el servicio TTS.
+     */
+    private Boolean servicioConectado = false;
     /**
      * Arreglo de cada una de las filas, de la lista de frases, resaltadas por el usuario.
      */
@@ -54,17 +60,9 @@ public class FrasesActivity extends ActionBarActivity {
      */
     private Cursor cursor;
     /**
-     * Adaptador para alimentar la <vistaFrases> con el contenido de <cursor>.
-     */
-    private SimpleCursorAdapter adapter;
-    /**
      * Referencia al manejador de pronunciación de texto.
      */
     private TextoAVoz pronunciador;
-    /**
-     * Encapsula los procedimientos a ejecutar dependiendo del estado del servicio de pronunciación.
-     */
-    private TTSCallback callback;
     /**
      * Identifica que clase realizoó la llamada de <FrasesActivity>.
      */
@@ -104,7 +102,7 @@ public class FrasesActivity extends ActionBarActivity {
                         @Override
                         public void run() {
                             mDbManager.eliminarFrases(vistaFrases.getCheckedItemIds());
-                            adapter.changeCursor(mDbManager.leerFrases());
+                            cargarLista();
                         }
                     });
                     mode.finish();
@@ -129,10 +127,11 @@ public class FrasesActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frases);
-        this.callback = new TTSCallback(new Callable() {
+        TTSCallback callback = new TTSCallback(new Callable() {
             @Override
             public Object call() throws Exception {
-                cargarLista();
+                vistaFrases.setVisibility(View.VISIBLE);
+                servicioConectado = true;
                 return null;
             }
         }, new Callable() {
@@ -166,10 +165,12 @@ public class FrasesActivity extends ActionBarActivity {
         }
         );
         this.vistaFrases = (ListView) findViewById(R.id.vista_frases);
+        this.vistaMensaje = (TextView) findViewById(R.id.vista_mensaje_frases);
         this.frasesSeleccionadas = new ArrayList<TextView>();
         this.mDbManager = new DataBaseManager(getApplicationContext());
-        this.pronunciador = new TextoAVoz(this, this.callback);
+        this.pronunciador = new TextoAVoz(this, callback);
         this.parentActivityClass = getIntent().getExtras() == null ? MainActivity.class : ChatActivity.class;
+        cargarLista();
     }
 
     @Override
@@ -203,47 +204,27 @@ public class FrasesActivity extends ActionBarActivity {
      */
     public void cargarLista() {
         this.cursor = this.mDbManager.leerFrases();
-        String[] from = new String[]{DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
-        int[] to = new int[]{android.R.id.text1};
-        this.adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_activated_1, cursor, from, to, 0);
-        this.vistaFrases.setAdapter(this.adapter);
-        // Cuando se realiza un LongClick se abre el menú contextual.
-        this.vistaFrases.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                vistaFrases.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                if (mActionMode != null)
-                    return false;
-                mActionMode = startActionMode(mActionModeCallback);
-                vistaFrases.setItemChecked(position, true);
-                frasesSeleccionadas.add((TextView) view);
-                return true;
-            }
-        });
-        this.vistaFrases.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (actionMenu != null) {
-                    MenuItem item = actionMenu.findItem(R.id.action_modificarfrase);
-                    frasesSeleccionadas.add((TextView) view);
-                    if (vistaFrases.getCheckedItemCount() > 1)
-                        item.setVisible(false);
-                    else
-                        item.setVisible(true);
-                } else {
-                    if (parentActivityClass == ChatActivity.class) {
-                        Intent resultado = new Intent();
-                        resultado.putExtra("frase", ((TextView) view).getText().toString());
-                        setResult(RESULT_OK, resultado);
-                        finish();
-                    } else if (parentActivityClass == MainActivity.class) {
-                        if (fraseEnEjecucion != null)
-                            fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                        fraseEnEjecucion = (TextView) view;
-                        pronunciador.pronunciar(fraseEnEjecucion.getText().toString());
-                    }
+        if (cursor.moveToFirst()) {
+            ocultarMensaje();
+            String[] from = new String[]{DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
+            int[] to = new int[]{android.R.id.text1};
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_activated_1, cursor, from, to, 0);
+            this.vistaFrases.setAdapter(adapter);
+            // Cuando se realiza un LongClick se abre el menú contextual.
+            this.vistaFrases.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    return fraseLongClick(position, (TextView) view);
                 }
-            }
-        });
+            });
+            this.vistaFrases.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    fraseClick((TextView) view);
+                }
+            });
+        } else {
+            mostrarMensaje();
+        }
     }
 
     /**
@@ -265,7 +246,7 @@ public class FrasesActivity extends ActionBarActivity {
                             mDbManager.insertarFrase(input.getText().toString());
                         else
                             mDbManager.actualizarFrase(id, input.getText().toString());
-                        adapter.changeCursor(mDbManager.leerFrases());
+                        cargarLista();
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -273,5 +254,49 @@ public class FrasesActivity extends ActionBarActivity {
                     }
                 })
                 .show();
+    }
+
+    private void mostrarMensaje() {
+        this.vistaMensaje.setVisibility(View.VISIBLE);
+        this.vistaFrases.setVisibility(View.GONE);
+    }
+
+    private void ocultarMensaje() {
+        this.vistaMensaje.setVisibility(View.GONE);
+        if (servicioConectado)
+            this.vistaFrases.setVisibility(View.VISIBLE);
+    }
+
+    private Boolean fraseLongClick(int position, TextView view) {
+        vistaFrases.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        if (mActionMode != null)
+            return false;
+        mActionMode = startActionMode(mActionModeCallback);
+        vistaFrases.setItemChecked(position, true);
+        frasesSeleccionadas.add((TextView) view);
+        return true;
+    }
+
+    private void fraseClick(TextView view) {
+        if (actionMenu != null) {
+            MenuItem item = actionMenu.findItem(R.id.action_modificarfrase);
+            frasesSeleccionadas.add(view);
+            if (vistaFrases.getCheckedItemCount() > 1)
+                item.setVisible(false);
+            else
+                item.setVisible(true);
+        } else {
+            if (parentActivityClass == ChatActivity.class) {
+                Intent resultado = new Intent();
+                resultado.putExtra("frase", view.getText().toString());
+                setResult(RESULT_OK, resultado);
+                finish();
+            } else if (parentActivityClass == MainActivity.class) {
+                if (fraseEnEjecucion != null)
+                    fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                fraseEnEjecucion = view;
+                pronunciador.pronunciar(fraseEnEjecucion.getText().toString());
+            }
+        }
     }
 }
