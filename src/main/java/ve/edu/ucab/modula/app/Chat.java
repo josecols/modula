@@ -148,6 +148,7 @@ public class Chat extends ActionBarActivity {
         switch (id) {
             case R.id.action_frases:
                 Intent frases = new Intent(this,FrasesActivity.class);
+                frases.putExtra("chat",true);
                 startActivityForResult(frases,FrasesActivity.FRASES_ID);
                 return true;
             default:
