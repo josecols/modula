@@ -152,7 +152,8 @@ public class FrasesActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
-        this.cursor.close();
+        if (this.cursor != null)
+            this.cursor.close();
         this.pronunciador.finalizar();
         super.onDestroy();
     }

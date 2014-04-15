@@ -115,8 +115,6 @@ public class Chat extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.chat, menu);
         getActionBar().setHomeButtonEnabled(true);
         Cursor cur = bd.leerChat(id_chat);
@@ -154,15 +152,15 @@ public class Chat extends ActionBarActivity {
         //return super.onOptionsItemSelected(item);
     }
 
-
-    public void onDestroy() {
+    @Override
+    protected void onDestroy() {
         if (locutor != null) {
             locutor.finalizar();
         }
         super.onDestroy();
     }
 
-    void addNewMessage(Mensaje m) {
+    private void addNewMessage(Mensaje m) {
         mensajes.add(m);
         adaptador.notifyDataSetChanged();
         lista.setSelection(mensajes.size() - 1);

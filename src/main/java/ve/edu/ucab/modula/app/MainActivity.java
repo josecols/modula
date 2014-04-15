@@ -35,10 +35,8 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
                 return true;
             case R.id.action_nuevochat:
-                DataBaseManager bd = new DataBaseManager(this);
-                long id_chat = bd.crearChat();
-                Intent chat = new Intent(this,Chat.class);
-                chat.putExtra("id_chat",id_chat);
+                Intent chat = new Intent(this, Chat.class);
+                chat.putExtra("id_chat", new DataBaseManager(this).crearChat());
                 startActivity(chat);
                 return true;
         }
