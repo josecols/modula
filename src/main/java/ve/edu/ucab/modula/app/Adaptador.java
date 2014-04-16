@@ -51,7 +51,11 @@ public class Adaptador extends BaseAdapter{
         LayoutParams parametros = (LayoutParams) holder.getLayoutParams();
         if(msj.enviado()){
             parametros.gravity = Gravity.RIGHT;
-            holder.setBackgroundResource(R.drawable.burbuja_verde);
+            if(!msj.listo())
+                holder.setBackgroundResource(R.drawable.burbuja_verde1);
+            else
+                holder.setBackgroundResource(R.drawable.burbuja_verde2);
+
         }else{
             parametros.gravity = Gravity.LEFT;
             holder.setBackgroundResource(R.drawable.burbuja_gris);

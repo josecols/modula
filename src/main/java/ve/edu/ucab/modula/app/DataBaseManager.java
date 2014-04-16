@@ -145,8 +145,11 @@ public final class DataBaseManager {
 
     public void eliminarChats(long ids[]) {
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
-        for (long id : ids)
+        for (long id : ids){
             this.sqLiteDatabase.delete(DataBaseContract.ChatsTabla.TABLE_NAME,
                     DataBaseContract.ChatsTabla._ID + "=" + String.valueOf(id), null);
+            this.sqLiteDatabase.delete(DataBaseContract.MensajesTabla.TABLE_NAME,
+                    DataBaseContract.MensajesTabla.COLUMN_NAME_CHAT_ID + "=" + String.valueOf(id), null);
+        }
     }
 }
