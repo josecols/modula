@@ -5,16 +5,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.example.myapplication.app.MainActivity"
-    android:background="@drawable/fondo">
+    android:background="@drawable/chat_fondo"
+    tools:context="com.example.myapplication.app.MainActivity">
 
     <LinearLayout
         android:id="@+id/barra"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:paddingTop="4dp"
         android:orientation="horizontal"
-        android:background="#DFDFDF">
+        android:background="@drawable/sombra">
 
         <ImageButton
             android:id="@+id/escuchar"
@@ -34,7 +35,7 @@
             android:layout_height="fill_parent"
             android:layout_margin="5sp"
             android:hint="@string/hint_activity_chat"
-            android:layout_weight="1"></EditText>
+            android:layout_weight="1" />
 
         <ImageButton
             android:id="@+id/hablar"
@@ -57,7 +58,7 @@
         android:layout_alignParentTop="true"
         android:cacheColorHint="#00000000"
         android:divider="#00000000"
-        android:listSelector="#00000000"></ListView>
+        android:listSelector="#00000000" />
 
 
 </RelativeLayout>

@@ -4,13 +4,13 @@
     tools:context="ve.edu.ucab.modula.app.MainActivity">
 
     <item
-        android:id="@+id/action_modificarfrase"
+        android:id="@+id/action_modificarchat"
         android:icon="@drawable/ic_action_edit"
-        android:title="@string/context_modificarfrase"
+        android:title="@string/context_modificarchat"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_eliminarfrase"
+        android:id="@+id/action_eliminarchat"
         android:icon="@drawable/ic_action_discard"
-        android:title="@string/context_eliminarfrase"
+        android:title="@string/context_eliminarchat"
         app:showAsAction="ifRoom" />
 </menu>

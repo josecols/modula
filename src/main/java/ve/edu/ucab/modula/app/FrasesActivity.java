@@ -48,10 +48,6 @@ public class FrasesActivity extends ActionBarActivity {
      */
     private TextView fraseEnEjecucion;
     /**
-     * Bandera para determinar el modo contextual de la vista.
-     */
-    private ActionMode mActionMode;
-    /**
      * Interfaz para realizar operaciones sobre la base de datos.
      */
     private DataBaseManager mDbManager;
@@ -67,6 +63,10 @@ public class FrasesActivity extends ActionBarActivity {
      * Identifica que clase realizoó la llamada de <FrasesActivity>.
      */
     private Class parentActivityClass;
+    /**
+     * Bandera para determinar el modo contextual de la vista.
+     */
+    private ActionMode mActionMode;
     /**
      * Menú contextual que es activado cuando el usuario realiza un LongClick sobre <vistaFrases>.
      */
@@ -91,7 +91,7 @@ public class FrasesActivity extends ActionBarActivity {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_modificarfrase:
-                    crearDialogo(vistaFrases.getCheckedItemIds()[0], mDbManager.getFrase(vistaFrases.getCheckedItemIds()[0]));
+                    crearDialogo(vistaFrases.getCheckedItemIds()[0], mDbManager.leerFrase(vistaFrases.getCheckedItemIds()[0]));
                     mode.finish();
                     return true;
                 case R.id.action_eliminarfrase:
@@ -190,11 +190,15 @@ public class FrasesActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_nuevafrase) {
+        switch (id) {
+        case R.id.action_nuevafrase:
             crearDialogo(-1, null);
             return true;
+        default:
+            setResult(RESULT_OK);
+            finish();
+            return true;
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -227,6 +231,50 @@ public class FrasesActivity extends ActionBarActivity {
         }
     }
 
+    private void mostrarMensaje() {
+        this.vistaMensaje.setVisibility(View.VISIBLE);
+        this.vistaFrases.setVisibility(View.GONE);
+    }
+
+    private void ocultarMensaje() {
+        this.vistaMensaje.setVisibility(View.GONE);
+        if (servicioConectado)
+            this.vistaFrases.setVisibility(View.VISIBLE);
+    }
+
+    private Boolean fraseLongClick(int position, TextView view) {
+        if (mActionMode != null)
+            return false;
+        vistaFrases.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        this.mActionMode = startActionMode(mActionModeCallback);
+        this.vistaFrases.setItemChecked(position, true);
+        this.frasesSeleccionadas.add(view);
+        return true;
+    }
+
+    private void fraseClick(TextView view) {
+        if (this.actionMenu != null) {
+            MenuItem item = actionMenu.findItem(R.id.action_modificarfrase);
+            this.frasesSeleccionadas.add(view);
+            if (this.vistaFrases.getCheckedItemCount() > 1)
+                item.setVisible(false);
+            else
+                item.setVisible(true);
+        } else {
+            if (this.parentActivityClass == ChatActivity.class) {
+                Intent resultado = new Intent();
+                resultado.putExtra("frase", view.getText().toString());
+                setResult(RESULT_OK, resultado);
+                finish();
+            } else if (this.parentActivityClass == MainActivity.class) {
+                if (this.fraseEnEjecucion != null)
+                    this.fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                this.fraseEnEjecucion = view;
+                pronunciador.pronunciar(this.fraseEnEjecucion.getText().toString());
+            }
+        }
+    }
+
     /**
      * Genera un diálogo con un EditText con el fin de solicitarle al usuario el texto de la frase.
      *
@@ -254,49 +302,5 @@ public class FrasesActivity extends ActionBarActivity {
                     }
                 })
                 .show();
-    }
-
-    private void mostrarMensaje() {
-        this.vistaMensaje.setVisibility(View.VISIBLE);
-        this.vistaFrases.setVisibility(View.GONE);
-    }
-
-    private void ocultarMensaje() {
-        this.vistaMensaje.setVisibility(View.GONE);
-        if (servicioConectado)
-            this.vistaFrases.setVisibility(View.VISIBLE);
-    }
-
-    private Boolean fraseLongClick(int position, TextView view) {
-        vistaFrases.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        if (mActionMode != null)
-            return false;
-        mActionMode = startActionMode(mActionModeCallback);
-        vistaFrases.setItemChecked(position, true);
-        frasesSeleccionadas.add((TextView) view);
-        return true;
-    }
-
-    private void fraseClick(TextView view) {
-        if (actionMenu != null) {
-            MenuItem item = actionMenu.findItem(R.id.action_modificarfrase);
-            frasesSeleccionadas.add(view);
-            if (vistaFrases.getCheckedItemCount() > 1)
-                item.setVisible(false);
-            else
-                item.setVisible(true);
-        } else {
-            if (parentActivityClass == ChatActivity.class) {
-                Intent resultado = new Intent();
-                resultado.putExtra("frase", view.getText().toString());
-                setResult(RESULT_OK, resultado);
-                finish();
-            } else if (parentActivityClass == MainActivity.class) {
-                if (fraseEnEjecucion != null)
-                    fraseEnEjecucion.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                fraseEnEjecucion = view;
-                pronunciador.pronunciar(fraseEnEjecucion.getText().toString());
-            }
-        }
     }
 }

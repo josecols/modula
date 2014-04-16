@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 /**
  * TTSCallback permite encapsular los procedimientos que se deben ejecutar según
  * el estado alcanzado del servicio <TextToSpeech>.
- *
+ * <p/>
  * Son cuatro estados:
  * 1. Cuando el servicio realizó un vínculo con la aplicación y está a la espera de texto a pronunciar.
  * 2. Cuando el servicio está pronunciando texto.
@@ -44,7 +44,6 @@ public class TTSCallback {
         try {
             this.servicioEsperaCallback.call();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -55,7 +54,6 @@ public class TTSCallback {
         try {
             this.servicioEjecucionCallback.call();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -66,7 +64,6 @@ public class TTSCallback {
         try {
             this.servicioListoCallback.call();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -77,7 +74,6 @@ public class TTSCallback {
         try {
             this.servicioErrorCallback.call();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

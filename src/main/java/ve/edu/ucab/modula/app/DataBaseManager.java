@@ -34,7 +34,7 @@ public final class DataBaseManager {
      * @param id ID de la frase en la base de datos.
      * @return Texto de la frase.
      */
-    public String getFrase(long id) {
+    public String leerFrase(long id) {
         String[] columnas = {DataBaseContract.FrasesTabla._ID, DataBaseContract.FrasesTabla.COLUMN_NAME_TITULO};
         this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
         Cursor cursor = this.sqLiteDatabase.query(DataBaseContract.FrasesTabla.TABLE_NAME, columnas,
@@ -109,6 +109,16 @@ public final class DataBaseManager {
         this.sqLiteDatabase.insert(DataBaseContract.MensajesTabla.TABLE_NAME, null, values);
     }
 
+    public Cursor leerChats() {
+        String[] columnas = {
+                DataBaseContract.ChatsTabla._ID,
+                DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO,
+                DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO
+        };
+        this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
+        return this.sqLiteDatabase.query(DataBaseContract.ChatsTabla.TABLE_NAME, columnas, null, null, null, null, null);
+    }
+
     public Cursor leerChat(long id) {
         this.sqLiteDatabase = this.mDbHelper.getReadableDatabase();
         String[] columnas = {DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO, DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO};
@@ -125,11 +135,18 @@ public final class DataBaseManager {
 
     public long crearChat() {
         Calendar cal = new GregorianCalendar();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO, df.format(cal.getTime()));
         values.put(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO, "");
         return this.sqLiteDatabase.insert(DataBaseContract.ChatsTabla.TABLE_NAME, null, values);
+    }
+
+    public void eliminarChats(long ids[]) {
+        this.sqLiteDatabase = this.mDbHelper.getWritableDatabase();
+        for (long id : ids)
+            this.sqLiteDatabase.delete(DataBaseContract.ChatsTabla.TABLE_NAME,
+                    DataBaseContract.ChatsTabla._ID + "=" + String.valueOf(id), null);
     }
 }
