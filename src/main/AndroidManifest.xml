@@ -35,8 +35,12 @@
         <activity
             android:name="ve.edu.ucab.modula.app.PerfilActivity"
             android:label="@string/title_activity_perfil"
-            android:screenOrientation="portrait"
-            android:parentActivityName="ve.edu.ucab.modula.app.ChatActivity" >
+            android:parentActivityName="ve.edu.ucab.modula.app.ChatActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="ve.edu.ucab.modula.app.PreferenciasActivity"
+            android:label="@string/title_activity_preferencias" >
         </activity>
     </application>
 

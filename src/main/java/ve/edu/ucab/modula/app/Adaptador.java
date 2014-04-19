@@ -3,6 +3,8 @@ package ve.edu.ucab.modula.app;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +19,17 @@ import android.widget.TextView;
 public class Adaptador extends BaseAdapter{
     private Context contexto;
     private ArrayList<Mensaje> mensajes;
+    private int tamanoletra;
+    private int tipoletra;
+
 
     public Adaptador(Context contexto, ArrayList<Mensaje> mensajes){
         super();
         this.contexto = contexto;
         this.mensajes = mensajes;
+        SharedPreferences preferencia = contexto.getSharedPreferences("Preferencias", contexto.MODE_PRIVATE);
+        tamanoletra = preferencia.getInt("tamano",0)*2+18;
+        tipoletra = preferencia.getInt("fuente",0);
     }
 
     public int getCount(){
@@ -47,6 +55,8 @@ public class Adaptador extends BaseAdapter{
         }else{
             holder = (TextView) convertView.getTag();
         }
+        holder.setTextSize(tamanoletra);
+        holder.setTypeface((tipoletra==0)? Typeface.SANS_SERIF:(tipoletra==1)? Typeface.MONOSPACE:Typeface.SERIF);
         holder.setText(msj.getTexto());
         LayoutParams parametros = (LayoutParams) holder.getLayoutParams();
         if(msj.enviado()){

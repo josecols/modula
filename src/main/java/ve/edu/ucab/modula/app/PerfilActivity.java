@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -37,7 +36,8 @@ public class PerfilActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.perfil);
+        setContentView(R.layout.activity_perfil);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         dir = getDir("Fotos", this.MODE_PRIVATE);
         if (!dir.exists())
             dir.mkdir();

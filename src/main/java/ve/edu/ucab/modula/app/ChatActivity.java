@@ -1,22 +1,22 @@
 package ve.edu.ucab.modula.app;
 
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
-
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.widget.ListView;
 import android.database.Cursor;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -31,27 +31,28 @@ public class ChatActivity extends ActionBarActivity {
     private VozATexto traductor;
     private DataBaseManager bd;
     private long id_chat;
-    private Context con;
+    private int ult_mensaje;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat);
-        con = getApplicationContext();
-        locutor = new TextoAVoz(this, new TTSCallback(null, null, new Callable() {
-            @Override
-            public Object call() throws Exception {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mensajes.get(mensajes.size()-1).setListo(true);
-                        adaptador.notifyDataSetChanged();
-                        lista.setSelection(mensajes.size()-1);
-                    }
-                });
-                return null;
-            }
-        }, null));
+        setContentView(R.layout.activity_chat);
+        ult_mensaje = -1;
+        Callable call = new Callable() {
+                            @Override
+                            public Object call() throws Exception {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mensajes.get(++ult_mensaje).setListo(true);
+                                        adaptador.notifyDataSetChanged();
+                                        lista.setSelection(mensajes.size()-1);
+                                    }
+                                });
+                                return null;
+                            }
+                        };
+        locutor = new TextoAVoz(this, new TTSCallback(null, null, call, null));
         traductor = new VozATexto(this);
         boton_hablar = (ImageButton) findViewById(R.id.hablar);
         boton_escuchar = (ImageButton) findViewById(R.id.escuchar);
@@ -94,6 +95,7 @@ public class ChatActivity extends ActionBarActivity {
                 Mensaje msj = new Mensaje(cur.getString(col_texto), cur.getString(col_enviado).equals("1"));
                 msj.setListo(true);
                 mensajes.add(msj);
+                ult_mensaje++;
             } while (cur.moveToNext());
             adaptador.notifyDataSetChanged();
             lista.setSelection(mensajes.size() - 1);

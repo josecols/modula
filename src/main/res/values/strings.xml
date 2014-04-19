@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Modula</string>
     <string name="action_ajustes">Ajustes</string>
     <string name="action_nuevochat">Nueva conversación</string>
@@ -17,4 +18,20 @@
     <string name="title_button_perfil">Guardar</string>
     <string name="title_mensaje_main">No hay historial de conversaciones</string>
     <string name="title_mensaje_frases">Aún no has agregado frases</string>
+
+    <string-array name="fuentes">
+        <item>Sans</item>
+        <item>Mono Space</item>
+        <item>Serif</item>
+    </string-array>
+    <string-array name="tamanos">
+        <item>Pequeña</item>
+        <item>Mediana</item>
+        <item>Grande</item>
+    </string-array>
+
+    <string name="title_activity_preferencias">Preferencias</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>

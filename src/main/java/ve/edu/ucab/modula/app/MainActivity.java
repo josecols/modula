@@ -104,6 +104,8 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_ajustes:
+                Intent ajustes = new Intent(this, PreferenciasActivity.class);
+                startActivity(ajustes);
                 return true;
             case R.id.action_frases:
                 Intent intent = new Intent(this, FrasesActivity.class);
@@ -176,7 +178,7 @@ public class MainActivity extends ActionBarActivity {
     private void construirChat(TextView view, Cursor cursor) {
         Drawable drawable = null;
         String foto = cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO));
-        view.setText(cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO)));
+        view.setText(" "+cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO)));
         if (foto.equals(""))
             drawable = getResources().getDrawable(R.drawable.user);
         else
