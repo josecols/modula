@@ -10,8 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
+
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.widget.ListView;
@@ -32,6 +34,7 @@ public class ChatActivity extends ActionBarActivity {
     private DataBaseManager bd;
     private long id_chat;
     private int ult_mensaje;
+    private Cursor cur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,19 +42,19 @@ public class ChatActivity extends ActionBarActivity {
         setContentView(R.layout.activity_chat);
         ult_mensaje = -1;
         Callable call = new Callable() {
-                            @Override
-                            public Object call() throws Exception {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mensajes.get(++ult_mensaje).setListo(true);
-                                        adaptador.notifyDataSetChanged();
-                                        lista.setSelection(mensajes.size()-1);
-                                    }
-                                });
-                                return null;
-                            }
-                        };
+            @Override
+            public Object call() throws Exception {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensajes.get(++ult_mensaje).setListo(true);
+                        adaptador.notifyDataSetChanged();
+                        lista.setSelection(mensajes.size() - 1);
+                    }
+                });
+                return null;
+            }
+        };
         locutor = new TextoAVoz(this, new TTSCallback(null, null, call, null));
         traductor = new VozATexto(this);
         boton_hablar = (ImageButton) findViewById(R.id.hablar);
@@ -87,7 +90,7 @@ public class ChatActivity extends ActionBarActivity {
 
 
     private void cargarMensajes() {
-        Cursor cur = bd.leerMensajes(id_chat);
+        cur = bd.leerMensajes(id_chat);
         if (cur.moveToFirst()) {
             int col_texto = cur.getColumnIndex(DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO);
             int col_enviado = cur.getColumnIndex(DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO);
@@ -177,10 +180,15 @@ public class ChatActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onPause() {
+        if (isFinishing() && mensajes.size() < 1) bd.eliminarChats(new long[]{id_chat});
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
-        if (locutor != null) {
-            locutor.finalizar();
-        }
+        if (locutor != null) locutor.finalizar();
+        if (cur != null) cur.close();
         super.onDestroy();
     }
 

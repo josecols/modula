@@ -161,13 +161,13 @@ public class MainActivity extends ActionBarActivity {
             this.vistaChats.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    return fraseLongClick(i, (TextView) view);
+                    return chatLongClick(i, (TextView) view);
                 }
             });
             this.vistaChats.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    fraseClick(l, (TextView) view);
+                    chatClick(l, (TextView) view);
                 }
             });
         } else {
@@ -178,7 +178,7 @@ public class MainActivity extends ActionBarActivity {
     private void construirChat(TextView view, Cursor cursor) {
         Drawable drawable = null;
         String foto = cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.ChatsTabla.COLUMN_NAME_FOTO));
-        view.setText(" "+cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO)));
+        view.setText(" " + cursor.getString(cursor.getColumnIndexOrThrow(DataBaseContract.ChatsTabla.COLUMN_NAME_TITULO)));
         if (foto.equals(""))
             drawable = getResources().getDrawable(R.drawable.user);
         else
@@ -197,7 +197,7 @@ public class MainActivity extends ActionBarActivity {
         this.vistaChats.setVisibility(View.VISIBLE);
     }
 
-    private Boolean fraseLongClick(int position, TextView view) {
+    private Boolean chatLongClick(int position, TextView view) {
         if (this.mActionMode != null)
             return false;
         this.vistaChats.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -207,7 +207,7 @@ public class MainActivity extends ActionBarActivity {
         return true;
     }
 
-    private void fraseClick(long id, TextView view) {
+    private void chatClick(long id, TextView view) {
         if (this.actionMenu != null) {
             MenuItem item = actionMenu.findItem(R.id.action_modificarchat);
             this.chatsSeleccionados.add(view);
