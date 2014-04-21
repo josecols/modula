@@ -1,39 +1,84 @@
 package ve.edu.ucab.modula.app;
 
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
-
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.widget.ListView;
 import android.database.Cursor;
-import android.widget.TextView;
-import android.widget.Toast;
 
-
+/**
+ * Actividad que sirve de interfaz para el manejo del chat o bien de una conversacion
+ * particular
+ */
 public class ChatActivity extends ActionBarActivity {
+
+    /**
+     * ListView que maneja los mensajes involucrados en el chat
+     */
     private ListView lista;
+
+    /**
+     * Boton encargado de tomar el texto introducido por el usuario y traducirlo a voz
+     */
     private ImageButton boton_hablar;
+
+    /**
+     * Boton encargado de iniciar el proceso de "escucha" de la aplicacion
+     */
     private ImageButton boton_escuchar;
+
+    /**
+     * Arreglo de Mensajes manejados en el Chat
+     */
     private ArrayList<Mensaje> mensajes;
+
+    /**
+     * Barra de Texto que permite la introducion del texto a modular
+     */
     private EditText texto;
+
+    /**
+     * Instancia de la clase Adaptador que sirve para el manejo de la interfaz del ListView Lista
+     */
     private Adaptador adaptador;
+
+    /**
+     * Permite la conversion de texto a voz
+     */
     private TextoAVoz locutor;
+
+    /**
+     * Permite la conversion de Voz a Texto
+     */
     private VozATexto traductor;
+
+    /**
+     * Manejador de la informacion presente en la BD
+     */
     private DataBaseManager bd;
+
+    /**
+     * id (en la BD) del chat gestionado
+     */
     private long id_chat;
+
+    /**
+     * ultimo mensaje
+     */
     private int ult_mensaje;
+
+    /**
+     * Variable auxliar para manejar los resultados de una consulta
+     */
     private Cursor cur;
 
     @Override
@@ -82,6 +127,8 @@ public class ChatActivity extends ActionBarActivity {
         boton_escuchar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(locutor.estaHablando())
+                    locutor.parar();
                 traductor.traducir();
             }
         });
@@ -89,6 +136,9 @@ public class ChatActivity extends ActionBarActivity {
     }
 
 
+    /**
+     * Carga los Mensajes almacenados en la Base de Datos de un chat Correspondiente
+     */
     private void cargarMensajes() {
         cur = bd.leerMensajes(id_chat);
         if (cur.moveToFirst()) {
@@ -112,6 +162,7 @@ public class ChatActivity extends ActionBarActivity {
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> texto = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     Mensaje msj = new Mensaje(texto.get(0), false);
+                    ult_mensaje++;
                     addNewMessage(msj);
                     bd.insertarMensaje(id_chat, msj);
                 }
@@ -146,8 +197,11 @@ public class ChatActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     * Carga la informacion del chat (Titulo y Foto) y los presenta en la interfaz
+     */
     public void cargarDatosChat() {
-        Cursor cur = bd.leerChat(id_chat);
+        cur = bd.leerChat(id_chat);
         String foto = "";
         String titulo = "";
         if (cur.moveToFirst()) {
@@ -192,6 +246,12 @@ public class ChatActivity extends ActionBarActivity {
         super.onDestroy();
     }
 
+    /**
+     * Añade un nuevo mensaje al arreglo y avisa al adaptador que ha ocurrido un cambio
+     * para que refresque la interfaz
+     * @param m
+     *      mensaje a añadir en el arreglo
+     */
     private void addNewMessage(Mensaje m) {
         mensajes.add(m);
         adaptador.notifyDataSetChanged();

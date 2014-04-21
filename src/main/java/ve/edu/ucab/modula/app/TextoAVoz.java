@@ -62,6 +62,22 @@ public class TextoAVoz {
     }
 
     /**
+     * Detiene la voz sintetica
+     */
+    public int parar(){
+        return pronunciador.stop();
+    }
+
+    /**
+     *
+     * @return
+     *      true si hay algun sonido reproduciendose
+     */
+    public boolean estaHablando(){
+        return pronunciador.isSpeaking();
+    }
+
+    /**
      * Detiene el servicio, este método se debe llamar cuando se destruye un Activity que emplea la clase o
      * habrá fuga de memoria en el servicio.
      */

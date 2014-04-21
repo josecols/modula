@@ -21,16 +21,56 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * Permite el Manejo y gestion del perfil (Foto y titulo)
+ * de un chat determinado
+ */
 public class PerfilActivity extends ActionBarActivity {
     public static final int PERFIL_ID = 3;
+
+    /**
+     * View empleado para mostrar la foto capturada
+     */
     private ImageView foto;
+
+    /**
+     * boton que permite el uso de la foto por defecto de un usuario
+     */
     private ImageButton eliminar;
+
+    /**
+     * boton que permite el uso de la camara para la captura de fotos
+     */
     private ImageButton camara;
+
+    /**
+     * barra de Texto para la introduccion del titulo del chat
+     */
     private EditText titulo;
+
+    /**
+     * boton empleado para guardar los cambios
+     */
     private Button aceptar;
+
+    /**
+     * variable auxiliar para el manejo de la BD
+     */
     private DataBaseManager bd;
+
+    /**
+     * Almacena el BMP de la ultima foto tomada
+     */
     private Bitmap img;
+
+    /**
+     * Directorio privado para almacenar las fotos de la app
+     */
     private File dir;
+
+    /**
+     * id del chat (en la BD) que se esta manipulando
+     */
     private long id_chat;
 
     @Override

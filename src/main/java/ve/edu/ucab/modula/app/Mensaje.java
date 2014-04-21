@@ -1,12 +1,26 @@
 package ve.edu.ucab.modula.app;
 
 /**
- * Created by JOSE on 08/04/14.
+ * Clase para el manejo de los mensajes en el chat
  */
 public class Mensaje {
 
+    /**
+     * informacion que lleva el mensaje
+     */
     private String texto;
+
+    /**
+     * sentido del mensaje
+     * true = mensaje enviado desde el usuario hacia el oyente
+     * false = mensaje recibido por el usuario desde el hablante
+     */
     private boolean enviado;
+
+    /**
+     * atributo usado en caso de que el mensaje haya sido
+     * enviado para determinar si culmino su reproduccion (Sonido)
+     */
     private boolean listo;
 
     public Mensaje(String texto, boolean enviado){
@@ -20,6 +34,7 @@ public class Mensaje {
     }
 
     public boolean enviado(){ return enviado; }
+
     public boolean listo(){ return listo; }
 
     public void setTexto(String texto){

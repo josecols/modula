@@ -14,15 +14,38 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 /**
- * Created by JOSE on 08/04/14.
+ * Clase que funciona como adaptador del ListView empleado
+ * en el chat
  */
 public class Adaptador extends BaseAdapter{
+
+    /**
+     * contexto de la actividad que contiene el ListView que usa el adaptador
+     */
     private Context contexto;
+
+    /**
+     * Arreglo de Mensajes que se visualizaran en el ListView
+     */
     private ArrayList<Mensaje> mensajes;
+
+    /**
+     * Tamaño de Letra de los mensajes del chat
+     */
     private int tamanoletra;
+
+    /**
+     * Tipo de Letra de los mensajes del Chat
+     */
     private int tipoletra;
 
-
+    /**
+     *
+     * @param contexto
+     *      contexto de la actividad que contiene el ListView que usa el adaptador
+     * @param mensajes
+     *      Arreglo de Mensajes que se visualizaran en el ListView
+     */
     public Adaptador(Context contexto, ArrayList<Mensaje> mensajes){
         super();
         this.contexto = contexto;
@@ -32,18 +55,41 @@ public class Adaptador extends BaseAdapter{
         tipoletra = preferencia.getInt("fuente",0);
     }
 
+    /**
+     *
+     * @return
+     *      Numero de Mensajes en el Gestionados
+     */
     public int getCount(){
         return mensajes.size();
     }
 
+    /**
+     *
+     * @param position
+     *      Posicion de un mensaje del Arreglo
+     * @return
+     *      Mensaje ubicado en la posicion dada
+     */
     public Object getItem(int position){
         return mensajes.get(position);
     }
 
+    /**
+     * @param i
+     *      Posicion de un mensaje en el arreglo
+     * @return
+     *      Id del mensaje No necesario en esta aplicacion
+     */
     public long getItemId(int i) {
         return 0;
     }
 
+    /**
+     * Funcion empleada para determinar el View final que se visualizara en el ListView
+     * Esta funcion es usada internamente por el adaptador y es la encargada de determianar
+     * de acuerdo al arreglo de mensajes como ha de visualizarse el chat
+     */
     public View getView(int position, View convertView, ViewGroup parent){
         Mensaje msj = (Mensaje) this.getItem(position);
         TextView holder;
