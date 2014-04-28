@@ -71,7 +71,7 @@ public class PerfilActivity extends ActionBarActivity {
     /**
      * id del chat (en la BD) que se esta manipulando
      */
-    private long id_chat;
+    private long idChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +107,7 @@ public class PerfilActivity extends ActionBarActivity {
                 String str = titulo.getText().toString().trim();
                 if (!str.equals("")) {
                     if (img != null) {
-                        File file = new File(dir, String.valueOf(id_chat) + ".png");
+                        File file = new File(dir, String.valueOf(idChat) + ".png");
                         FileOutputStream out;
                         if (file.exists())
                             file.delete();
@@ -125,9 +125,9 @@ public class PerfilActivity extends ActionBarActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        bd.actualizarChat(id_chat, str, file.getPath());
+                        bd.actualizarChat(idChat, str, file.getPath());
                     } else
-                        bd.actualizarChat(id_chat, str, "");
+                        bd.actualizarChat(idChat, str, "");
                     setResult(RESULT_OK);
                     finish();
                 } else {
@@ -135,12 +135,12 @@ public class PerfilActivity extends ActionBarActivity {
                 }
             }
         });
-        id_chat = getIntent().getExtras().getLong("id_chat");
+        idChat = getIntent().getExtras().getLong("id_chat");
         cargarDatosChat();
     }
 
     public void cargarDatosChat() {
-        Cursor cur = bd.leerChat(id_chat);
+        Cursor cur = bd.leerChat(idChat);
         String aux_foto = "";
         String aux_titulo = "";
         if (cur.moveToFirst()) {

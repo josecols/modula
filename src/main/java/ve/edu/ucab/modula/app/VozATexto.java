@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.widget.Toast;
 
-/**
- * Created by JOSE on 11/04/14.
- */
 public class VozATexto {
     public static final int CONVERSION_ID = 1;
     private Activity actividad;

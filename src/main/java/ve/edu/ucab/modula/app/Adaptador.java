@@ -32,12 +32,12 @@ public class Adaptador extends BaseAdapter{
     /**
      * Tamaño de Letra de los mensajes del chat
      */
-    private int tamanoletra;
+    private int tamanoLetra;
 
     /**
      * Tipo de Letra de los mensajes del Chat
      */
-    private int tipoletra;
+    private int tipoLetra;
 
     /**
      *
@@ -51,8 +51,8 @@ public class Adaptador extends BaseAdapter{
         this.contexto = contexto;
         this.mensajes = mensajes;
         SharedPreferences preferencia = contexto.getSharedPreferences("Preferencias", contexto.MODE_PRIVATE);
-        tamanoletra = preferencia.getInt("tamano",0)*2+18;
-        tipoletra = preferencia.getInt("fuente",0);
+        tamanoLetra = preferencia.getInt("tamano",0)*2+18;
+        tipoLetra = preferencia.getInt("fuente",0);
     }
 
     /**
@@ -101,8 +101,8 @@ public class Adaptador extends BaseAdapter{
         }else{
             holder = (TextView) convertView.getTag();
         }
-        holder.setTextSize(tamanoletra);
-        holder.setTypeface((tipoletra==0)? Typeface.SANS_SERIF:(tipoletra==1)? Typeface.MONOSPACE:Typeface.SERIF);
+        holder.setTextSize(tamanoLetra);
+        holder.setTypeface((tipoLetra==0)? Typeface.SANS_SERIF:(tipoLetra==1)? Typeface.MONOSPACE:Typeface.SERIF);
         holder.setText(msj.getTexto());
         LayoutParams parametros = (LayoutParams) holder.getLayoutParams();
         if(msj.enviado()){

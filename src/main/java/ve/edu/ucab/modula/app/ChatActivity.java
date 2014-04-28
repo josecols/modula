@@ -29,12 +29,12 @@ public class ChatActivity extends ActionBarActivity {
     /**
      * Boton encargado de tomar el texto introducido por el usuario y traducirlo a voz
      */
-    private ImageButton boton_hablar;
+    private ImageButton botonHablar;
 
     /**
      * Boton encargado de iniciar el proceso de "escucha" de la aplicacion
      */
-    private ImageButton boton_escuchar;
+    private ImageButton botonEscuchar;
 
     /**
      * Arreglo de Mensajes manejados en el Chat
@@ -69,7 +69,7 @@ public class ChatActivity extends ActionBarActivity {
     /**
      * id (en la BD) del chat gestionado
      */
-    private long id_chat;
+    private long idChat;
 
     /**
      * ultimo mensaje
@@ -102,16 +102,16 @@ public class ChatActivity extends ActionBarActivity {
         };
         locutor = new TextoAVoz(this, new TTSCallback(null, null, call, null));
         traductor = new VozATexto(this);
-        boton_hablar = (ImageButton) findViewById(R.id.hablar);
-        boton_escuchar = (ImageButton) findViewById(R.id.escuchar);
+        botonHablar = (ImageButton) findViewById(R.id.hablar);
+        botonEscuchar = (ImageButton) findViewById(R.id.escuchar);
         texto = (EditText) findViewById(R.id.edit);
         mensajes = new ArrayList<Mensaje>();
         adaptador = new Adaptador(this, mensajes);
         bd = new DataBaseManager(getApplicationContext());
-        id_chat = getIntent().getExtras().getLong("id_chat");
+        idChat = getIntent().getExtras().getLong("id_chat");
         lista = (ListView) findViewById(R.id.lista);
         lista.setAdapter(adaptador);
-        boton_hablar.setOnClickListener(new View.OnClickListener() {
+        botonHablar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String str = texto.getText().toString().trim();
@@ -119,12 +119,12 @@ public class ChatActivity extends ActionBarActivity {
                 if (str.length() > 0) {
                     Mensaje msj = new Mensaje(str, true);
                     addNewMessage(msj);
-                    bd.insertarMensaje(id_chat, msj);
+                    bd.insertarMensaje(idChat, msj);
                     locutor.pronunciar(str);
                 }
             }
         });
-        boton_escuchar.setOnClickListener(new View.OnClickListener() {
+        botonEscuchar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(locutor.estaHablando())
@@ -140,7 +140,7 @@ public class ChatActivity extends ActionBarActivity {
      * Carga los Mensajes almacenados en la Base de Datos de un chat Correspondiente
      */
     private void cargarMensajes() {
-        cur = bd.leerMensajes(id_chat);
+        cur = bd.leerMensajes(idChat);
         if (cur.moveToFirst()) {
             int col_texto = cur.getColumnIndex(DataBaseContract.MensajesTabla.COLUMN_NAME_TEXTO);
             int col_enviado = cur.getColumnIndex(DataBaseContract.MensajesTabla.COLUMN_NAME_ENVIADO);
@@ -164,7 +164,7 @@ public class ChatActivity extends ActionBarActivity {
                     Mensaje msj = new Mensaje(texto.get(0), false);
                     ult_mensaje++;
                     addNewMessage(msj);
-                    bd.insertarMensaje(id_chat, msj);
+                    bd.insertarMensaje(idChat, msj);
                 }
                 break;
             }
@@ -173,7 +173,7 @@ public class ChatActivity extends ActionBarActivity {
                     String str = data.getStringExtra("frase");
                     Mensaje msj = new Mensaje(str, true);
                     addNewMessage(msj);
-                    bd.insertarMensaje(id_chat, msj);
+                    bd.insertarMensaje(idChat, msj);
                     locutor.pronunciar(str);
                 }
                 break;
@@ -201,7 +201,7 @@ public class ChatActivity extends ActionBarActivity {
      * Carga la informacion del chat (Titulo y Foto) y los presenta en la interfaz
      */
     public void cargarDatosChat() {
-        cur = bd.leerChat(id_chat);
+        cur = bd.leerChat(idChat);
         String foto = "";
         String titulo = "";
         if (cur.moveToFirst()) {
@@ -227,7 +227,7 @@ public class ChatActivity extends ActionBarActivity {
                 return true;
             default:
                 Intent perfil = new Intent(this, PerfilActivity.class);
-                perfil.putExtra("id_chat", id_chat);
+                perfil.putExtra("id_chat", idChat);
                 startActivityForResult(perfil, PerfilActivity.PERFIL_ID);
                 return true;
         }
@@ -235,7 +235,7 @@ public class ChatActivity extends ActionBarActivity {
 
     @Override
     protected void onPause() {
-        if (isFinishing() && mensajes.size() < 1) bd.eliminarChats(new long[]{id_chat});
+        if (isFinishing() && mensajes.size() < 1) bd.eliminarChats(new long[]{idChat});
         super.onPause();
     }
 
